@@ -3,8 +3,9 @@ export default class UserController {
   static async postUser (req, res) {
     try {
       const { name, lName, role, email, password } = req.body
-      if (!name || !lName || !role || !email || !password) return res.status(400).json({ message: 'complete los campos vacios' })
-      const user = await User.create({ name, lName, role, email, password })
+      const image = req.file ? req.file.filename : 'uploads/1727604226180-perfil.jpg'
+      if (!name || !lName || !role || !email || !password || !image) return res.status(400).json({ message: 'complete los campos vacios' })
+      const user = await User.create({ name, lName, role, email, password, image })
       res.status(201).json({ message: 'usuario creado', data: user })
     } catch (error) { res.status(500).json(error.message) }
   }
@@ -28,8 +29,10 @@ export default class UserController {
     try {
       const { id } = req.params
       const { name, lName, role, email, password } = req.body
-      const user = await User.update({ id, name, lName, role, email, password })
-      if (!user) return res.status(404).json({ message: 'Usuario no encontrado' })
+      const existe = await User.byId(id)
+      if (!existe) return res.status(404).json({ message: 'usuario no existe' })
+      const image = req.file ? req.file.filename : existe.image
+      const user = await User.update({ id, name, lName, role, email, password, image })
       if (user.affectedRows === 0) return res.status(404).json({ message: 'usuario no actualizado' })
       res.json({ message: 'usuario actualizado', data: user })
     } catch (error) { res.status(500).json(error.message) }

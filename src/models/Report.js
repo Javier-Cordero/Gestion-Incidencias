@@ -35,14 +35,27 @@ export default class Report {
       let query = 'UPDATE reports SET '
       const campo = []
       const valor = []
-      if (userId) { ; campo.push('user_id =?'); valor.push(userId) }
-      if (type) { campo.push('type =?'); valor.push(type) }
-      if (description) { campo.push('description =?'); valor.push(description) }
-      if (image) { campo.push('image =?'); valor.push(image) }
+      if (userId) {
+        campo.push('user_id =?')
+        valor.push(userId)
+      }
+      if (type) {
+        campo.push('type =?')
+        valor.push(type)
+      }
+      if (description) {
+        campo.push('description =?')
+        valor.push(description)
+      }
+      if (image) {
+        campo.push('image =?')
+        valor.push(image)
+      }
       if (campo.length === 0) return undefined
       query += campo.join(', ') + ' WHERE report_id = ?'
       valor.push(id)
       const [report] = await pool.execute(query, valor)
+      if (report.affectedRows === 0) throw new Error('no se pudo actualizar el reporte')
       return report
     } catch (error) { console.error(error.message) }
   }
