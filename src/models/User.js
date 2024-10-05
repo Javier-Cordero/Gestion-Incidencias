@@ -35,6 +35,11 @@ export default class User {
     return user
   }
 
+  static async byUser (username) {
+    const [user] = await pool.execute('SELECT user_id, name, l_name, role, email, image FROM users WHERE username =?', [username])
+    return user
+  }
+
   static async update ({ id, name, lName, role, email, password, image }) {
     try {
       let query = 'UPDATE users SET '

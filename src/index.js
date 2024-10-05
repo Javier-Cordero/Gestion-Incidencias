@@ -6,6 +6,7 @@ import reportRoutes from './routes/report.routes.js'
 import stateRoutes from './routes/state.routes.js'
 import detailRoutes from './routes/details.routes.js'
 import roleRoutes from './routes/role.routes.js'
+import authRoutes from './routes/auth.routes.js'
 const app = express()
 
 app.use(morgan('dev'))
@@ -15,5 +16,6 @@ app.use('/api/reports', reportRoutes)
 app.use('/api/states', stateRoutes)
 app.use('/api/details', detailRoutes)
 app.use('/api/roles', roleRoutes)
+app.use('/api/auth', authRoutes)
 
 app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`))
