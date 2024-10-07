@@ -20,7 +20,6 @@ class AuthController {
     try {
       const { password, ...userData } = req.user;
       res.json([userData]);
-      console.log(userData);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
