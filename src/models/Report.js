@@ -2,7 +2,7 @@ import { pool } from '../config/db.js'
 export default class Report {
   static async create ({ userId, type, description, image }) {
     try {
-      const obligatories = ['user_id', 'type', 'description']
+      const obligatories = ['userId', 'type', 'description']
       const save = [userId, type, description]
       if (image) {
         obligatories.push('image')
@@ -25,7 +25,7 @@ export default class Report {
 
   static async byId (id) {
     try {
-      const [report] = await pool.execute('SELECT * FROM reports WHERE report_id =?', [id])
+      const [report] = await pool.execute('SELECT * FROM reports WHERE reportId =?', [id])
       return report
     } catch (error) { console.error(error.message) }
   }
@@ -36,7 +36,7 @@ export default class Report {
       const campo = []
       const valor = []
       if (userId) {
-        campo.push('user_id =?')
+        campo.push('userId =?')
         valor.push(userId)
       }
       if (type) {
@@ -52,7 +52,7 @@ export default class Report {
         valor.push(image)
       }
       if (campo.length === 0) return undefined
-      query += campo.join(', ') + ' WHERE report_id = ?'
+      query += campo.join(', ') + ' WHERE reportId = ?'
       valor.push(id)
       const [report] = await pool.execute(query, valor)
       if (report.affectedRows === 0) throw new Error('no se pudo actualizar el reporte')
@@ -62,7 +62,7 @@ export default class Report {
 
   static async delete (id) {
     try {
-      const [report] = await pool.execute('DELETE FROM reports WHERE report_id =?', [id])
+      const [report] = await pool.execute('DELETE FROM reports WHERE reportId =?', [id])
       return report
     } catch (error) { console.error(error.message) }
   }

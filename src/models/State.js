@@ -16,21 +16,21 @@ export default class State {
 
   static async byId (id) {
     try {
-      const result = await pool.query('SELECT * FROM states WHERE state_id =?', [id])
+      const result = await pool.query('SELECT * FROM states WHERE stateId =?', [id])
       return result[0]
     } catch (error) { console.error(error.message) }
   }
 
   static async update ({ id, name }) {
     try {
-      const result = await pool.query('UPDATE states SET name =? WHERE state_id =?', [name, id])
+      const result = await pool.query('UPDATE states SET name =? WHERE stateId =?', [name, id])
       return result
     } catch (error) { console.error(error.message) }
   }
 
   static async delete (id) {
     try {
-      const result = await pool.query('DELETE FROM states WHERE state_id =?', [id])
+      const result = await pool.query('DELETE FROM states WHERE stateId =?', [id])
       return result
     } catch (error) { console.error(error.message) }
   }
