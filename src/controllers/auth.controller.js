@@ -3,17 +3,22 @@ import { compare } from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../config/config.js'
 
-class AuthController {
+export default class AuthController {
   static async login(req, res) {
     try {
       const { username, password } = req.body
-      const usuario = await User.byUser(username)
-      if (!usuario || usuario.length === 0) return res.status(404).json({ message: 'usuario incorrecto' })
-      const esValido = await compare(password, usuario[0].password)
+      if (!username || !password) return res.status(400).json({ message: 'Complete los campos vacios' })
+      const result = await User.byUser(username)
+      if (!result.success) return res.status(404).json({ message: 'usuario incorrecto' })
+      const usuario = result.data
+      const esValido = await compare(password, usuario.password)
       if (!esValido) return res.status(400).json({ message: 'Contraseña incorrecta' })
-      const token = jwt.sign({ userId: usuario[0].userId }, JWT_SECRET, { expiresIn: '1h' })
-      res.json({ token, user: usuario[0] })
-    } catch (error) { res.status(500).json({ message: error.message }) }
+      const token = jwt.sign({ userId: usuario.userId }, JWT_SECRET, { expiresIn: '1h' })
+      res.json({ success: true, token, user: usuario })
+    } catch (error) {
+      console.error(error.message)
+      res.status(500).json({ message: error.message })
+    }
   }
 
   static async me(req, res) {
@@ -24,7 +29,5 @@ class AuthController {
       res.status(500).json({ message: error.message });
     }
   }
-  
-}
 
-export default AuthController
+}

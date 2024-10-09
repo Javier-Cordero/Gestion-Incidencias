@@ -1,6 +1,6 @@
 import { pool } from '../config/db.js'
 export default class Report {
-  static async create ({ userId, type, description, image }) {
+  static async create({ userId, type, description, image }) {
     try {
       const obligatories = ['userId', 'type', 'description']
       const save = [userId, type, description]
@@ -16,21 +16,21 @@ export default class Report {
     } catch (error) { console.error(error.message) }
   }
 
-  static async all () {
+  static async all() {
     try {
-      const [report] = await pool.execute('SELECT * FROM reports')
+      const [report] = await pool.execute('SELECT r.reportId, u.username, r.type, r.description, r.image, r.fecha FROM reports r INNER JOIN users u ON r.userId = u.userId')
       return report
     } catch (error) { console.error(error.message) }
   }
 
-  static async byId (id) {
+  static async byId(id) {
     try {
-      const [report] = await pool.execute('SELECT * FROM reports WHERE reportId =?', [id])
+      const [report] = await pool.execute('SELECT r.reportId, u.username, r.type, r.description, r.image, r.fecha FROM reports r INNER JOIN users u ON r.userId = u.userId WHERE reportId =?', [id])
       return report
     } catch (error) { console.error(error.message) }
   }
 
-  static async update ({ id, userId, type, description, image }) {
+  static async update({ id, userId, type, description, image }) {
     try {
       let query = 'UPDATE reports SET '
       const campo = []
@@ -60,7 +60,7 @@ export default class Report {
     } catch (error) { console.error(error.message) }
   }
 
-  static async delete (id) {
+  static async delete(id) {
     try {
       const [report] = await pool.execute('DELETE FROM reports WHERE reportId =?', [id])
       return report

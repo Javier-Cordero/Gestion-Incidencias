@@ -2,8 +2,8 @@ import Details from '../models/Details.js'
 export default class DetailController {
   static async postDetail (req, res) {
     try {
-      const { reportId, stateId, description } = req.body
-      const detail = await Details.create({ reportId, stateId, description })
+      const { reportId, stateId, userId, description, fecha } = req.body
+      const detail = await Details.create({ reportId, stateId, userId, description, fecha })
       res.status(201).json(detail)
     } catch (error) { res.status(500).json({ error: error.message }) }
   }
@@ -26,8 +26,8 @@ export default class DetailController {
   static async patchDetail (req, res) {
     try {
       const { id } = req.params
-      const { reportId, stateId, description } = req.body
-      const detail = await Details.update({ id, reportId, stateId, description })
+      const { reportId, stateId, userId, description, fecha } = req.body
+      const detail = await Details.update({ id, reportId, stateId, userId, description, fecha })
       if (detail.affectedRows === 0) return res.status(404).json({ message: 'Detalle no encontrado' })
       res.status(201).json(detail)
     } catch (error) { res.status(500).json({ error: error.message }) }
