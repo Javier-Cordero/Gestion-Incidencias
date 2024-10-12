@@ -20,33 +20,32 @@ export default class User {
       const query = `INSERT INTO users(${campos}) VALUES(${placeholder})`
       const [result] = await pool.execute(query, save)
       if (result.affectedRows === 0) throw new Error('User not created')
-      return { success: true, message: 'ususario creado', data: result }
-    } catch (error) { return { success: false, message: error.message } }
+      return result
+    } catch (error) { return { message: error.message } }
   }
 
   static async all() {
     try {
       const [result] = await pool.execute('SELECT u.userId, u.name, u.lName, u.username, r.name as role, u.email, u.image FROM users u INNER JOIN roles r ON u.roleId = r.roleId')
-      return { success: true, message: 'lista de usuario', data: result };
-    } catch (error) { return { success: false, message: error.message } }
+      return result
+    } catch (error) { return { message: error.message } }
   }
 
   static async byId(id) {
     try {
       const [result] = await pool.execute('SELECT u.userId, u.name, u.lName, u.username, r.name as role, u.email, u.image FROM users u INNER JOIN roles r ON u.roleId=r.roleId WHERE u.userId =?', [id])
-      return { success: true, message: 'usuario encontrado por su id', data: result };
-    } catch (error) { return { success: true, message: 'User deleted', data: result }; }
+      return result
+    } catch (error) { return { message: error.message }; }
   }
 
   static async byUser(username) {
     try {
       const [result] = await pool.execute('SELECT u.userId, u.name, u.lName, u.username, r.name as role, u.email, u.password, u.image FROM users u INNER JOIN roles r ON u.roleId = r.roleId WHERE u.username = ?', [username]);
       if (result.length === 0) return { success: false, message: 'usuario no encontrado' }
-      return { success: true, message: 'User encontrado por su usuario', data: result[0] };
-    } catch (error) { return { success: false, message: error.message } }
+      return result[0]
+    } catch (error) { return { message: error.message } }
   }
-
-
+  
   static async update({ id, name, lName, username, roleId, email, password, image }) {
     try {
       let query = 'UPDATE users SET '
@@ -92,14 +91,14 @@ export default class User {
       valor.push(id)
       const [result] = await pool.execute(query, valor)
       if (result.affectedRows === 0) throw new Error('No se pudo actualizar el usuario. Verifica el ID.')
-      return { success: true, message: 'User update', data: result };
-    } catch (error) { return { success: false, message: error.message } }
+      return result
+    } catch (error) { return { message: error.message } }
   }
 
   static async delete(id) {
     try {
       const [result] = await pool.execute('DELETE FROM users WHERE userId =?', [id])
-      return { success: true, message: 'User deleted', data: result };
-    } catch (error) { return { success: false, message: error.message } }
+      return result
+    } catch (error) { return { message: error.message } }
   }
 }

@@ -11,23 +11,23 @@ export default class Report {
       const campo = obligatories.join(', ')
       const placeholder = obligatories.map(() => '?').join(', ')
       const query = `INSERT INTO reports (${campo}) VALUES (${placeholder})`
-      const user = await pool.execute(query, save)
-      return user
-    } catch (error) { console.error(error.message) }
+      const [result] = await pool.execute(query, save)
+      return result
+    } catch (error) { return { message: error.message } }
   }
 
   static async all() {
     try {
       const [report] = await pool.execute('SELECT r.reportId, u.username, r.type, r.description, r.image, r.fecha FROM reports r INNER JOIN users u ON r.userId = u.userId')
       return report
-    } catch (error) { console.error(error.message) }
+    } catch (error) { return { message: error.message } }
   }
 
   static async byId(id) {
     try {
       const [report] = await pool.execute('SELECT r.reportId, u.username, r.type, r.description, r.image, r.fecha FROM reports r INNER JOIN users u ON r.userId = u.userId WHERE reportId =?', [id])
       return report
-    } catch (error) { console.error(error.message) }
+    } catch (error) { return { message: error.message } }
   }
 
   static async update({ id, userId, type, description, image }) {
@@ -57,13 +57,13 @@ export default class Report {
       const [report] = await pool.execute(query, valor)
       if (report.affectedRows === 0) throw new Error('no se pudo actualizar el reporte')
       return report
-    } catch (error) { console.error(error.message) }
+    } catch (error) { return { message: error.message } }
   }
 
   static async delete(id) {
     try {
       const [report] = await pool.execute('DELETE FROM reports WHERE reportId =?', [id])
       return report
-    } catch (error) { console.error(error.message) }
+    } catch (error) { return { message: error.message } }
   }
 }
