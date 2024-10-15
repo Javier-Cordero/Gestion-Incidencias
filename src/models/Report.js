@@ -1,9 +1,9 @@
 import { pool } from '../config/db.js'
 export default class Report {
-  static async create({ userId, type, description, image }) {
+  static async create({ userId, type, description, image, fecha }) {
     try {
-      const obligatories = ['userId', 'type', 'description']
-      const save = [userId, type, description]
+      const obligatories = ['userId', 'type', 'description', 'fecha']
+      const save = [userId, type, description, fecha]
       if (image) {
         obligatories.push('image')
         save.push(image)
@@ -12,6 +12,7 @@ export default class Report {
       const placeholder = obligatories.map(() => '?').join(', ')
       const query = `INSERT INTO reports (${campo}) VALUES (${placeholder})`
       const [result] = await pool.execute(query, save)
+      console.log(result)
       return result
     } catch (error) { return { message: error.message } }
   }
@@ -30,15 +31,11 @@ export default class Report {
     } catch (error) { return { message: error.message } }
   }
 
-  static async update({ id, userId, type, description, image }) {
+  static async update({ id, type, description, image, fecha }) {
     try {
       let query = 'UPDATE reports SET '
       const campo = []
       const valor = []
-      if (userId) {
-        campo.push('userId =?')
-        valor.push(userId)
-      }
       if (type) {
         campo.push('type =?')
         valor.push(type)
@@ -50,6 +47,10 @@ export default class Report {
       if (image) {
         campo.push('image =?')
         valor.push(image)
+      }
+      if (fecha) {
+        campo.push('fecha =?')
+        valor.push(fecha)
       }
       if (campo.length === 0) return undefined
       query += campo.join(', ') + ' WHERE reportId = ?'

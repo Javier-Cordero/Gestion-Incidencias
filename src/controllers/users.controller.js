@@ -7,16 +7,16 @@ export default class UserController {
       const { name, lName, username, roleId, email, password } = req.body;
       const image = req.file ? req.file.filename : 'uploads/default-profile.jpg';
       if (!name || !lName || !username || !roleId || !email || !password) return res.status(400).json({ success: false, message: 'Complete los campos vacíos' });
-      const hashpw = await bcrypt.hash(password, 10);
-      const result = await User.create({ name, lName, username, roleId, email, password: hashpw, image });
-      res.status(201).json({ data: result });
+      const result = await User.create({ name, lName, username, roleId, email, password, image });
+      if (!result) return result.status(500).json({ success: false, message: 'error al crear el usuario' })
+      res.status(201).json({ success: true, data: result });
     } catch (error) { res.status(500).json({ success: false, message: error.message }) }
   }
 
   static async getAll(req, res) {
     try {
       const result = await User.all();
-      res.json({ data: result });
+      res.json({ success: true, data: result });
     } catch (error) { res.status(500).json({ success: false, message: error.message }) }
   }
 
@@ -24,7 +24,7 @@ export default class UserController {
     try {
       const result = await User.byId(req.params.id);
       if (!result) return res.status(404).json({ success: false, message: 'Usuario no encontrado' })
-      res.json({ data: result });
+      res.json({ success: true, data: result });
     } catch (error) { res.status(500).json({ success: false, message: error.message }) }
   }
 
@@ -37,8 +37,8 @@ export default class UserController {
       const image = req.file ? req.file.filename : existe.image;
       const hashpw = password ? await bcrypt.hash(password, 10) : existe.password;
       const result = await User.update({ id, name, lName, roleId, email, password: hashpw, image });
-      if (result.affectedRows === 0) { return res.status(404).json({ success: false, message: 'Usuario no actualizado' }) }
-      res.json({ data: result });
+      if (!result || result.affectedRows === 0) { return res.status(404).json({ success: false, message: 'Usuario no actualizado' }) }
+      res.json({ success: true, data: result });
     } catch (error) { res.status(500).json({ success: false, message: error.message }) }
   }
 
@@ -48,7 +48,7 @@ export default class UserController {
       const result = await User.delete(id);
       if (!result) return res.status(404).json({ success: false, message: 'Usuario no encontrado' })
       if (result.affectedRows === 0) return res.status(404).json({ success: false, message: 'Usuario no eliminado' })
-      res.json({ data: result });
+      res.json({ success: true, data: result });
     } catch (error) { res.status(500).json({ success: false, message: error.message }); }
   }
 }
