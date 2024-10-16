@@ -1,4 +1,5 @@
 import { pool } from '../config/db.js'
+import Details from './Details.js'
 export default class Report {
   static async create({ userId, type, description, image, fecha }) {
     try {
@@ -12,22 +13,23 @@ export default class Report {
       const placeholder = obligatories.map(() => '?').join(', ')
       const query = `INSERT INTO reports (${campo}) VALUES (${placeholder})`
       const [result] = await pool.execute(query, save)
-      console.log(result)
+      const newReportId = result.insertId
+      await Details.create({ reportId: newReportId, stateId: 1, userId: null, description: null, fecha: null })
       return result
     } catch (error) { return { message: error.message } }
   }
 
   static async all() {
     try {
-      const [report] = await pool.execute('SELECT r.reportId, u.username, r.type, r.description, r.image, r.fecha FROM reports r INNER JOIN users u ON r.userId = u.userId')
-      return report
+      const [result] = await pool.execute('SELECT r.reportId, u.username, r.type, r.description, r.image, r.fecha FROM reports r INNER JOIN users u ON r.userId = u.userId')
+      return result
     } catch (error) { return { message: error.message } }
   }
 
   static async byId(id) {
     try {
-      const [report] = await pool.execute('SELECT r.reportId, u.username, r.type, r.description, r.image, r.fecha FROM reports r INNER JOIN users u ON r.userId = u.userId WHERE reportId =?', [id])
-      return report
+      const [result] = await pool.execute('SELECT r.reportId, u.username, r.type, r.description, r.image, r.fecha FROM reports r INNER JOIN users u ON r.userId = u.userId WHERE reportId =?', [id])
+      return result
     } catch (error) { return { message: error.message } }
   }
 
@@ -55,16 +57,17 @@ export default class Report {
       if (campo.length === 0) return undefined
       query += campo.join(', ') + ' WHERE reportId = ?'
       valor.push(id)
-      const [report] = await pool.execute(query, valor)
-      if (report.affectedRows === 0) throw new Error('no se pudo actualizar el reporte')
-      return report
+      const [result] = await pool.execute(query, valor)
+      if (result.affectedRows === 0) return { status: 400, message: 'No se pudo actualizar el reporte. Verifica el ID.' }
+      return result
     } catch (error) { return { message: error.message } }
   }
 
   static async delete(id) {
     try {
-      const [report] = await pool.execute('DELETE FROM reports WHERE reportId =?', [id])
-      return report
+      const rs = await Details.delete(id)
+      const [result] = await pool.execute('DELETE FROM reports WHERE reportId =?', [id])
+      return { reporte: result, rs }
     } catch (error) { return { message: error.message } }
   }
 }

@@ -31,11 +31,12 @@ export default class ReportController {
   static async patchReport(req, res) {
     try {
       const { id } = req.params
-      const { userId, type, description, fecha } = req.body
+      const { type, description, fecha } = req.body
       const exixte = await Report.byId(id)
       if (!exixte) return res.status(404).json({ message: 'reporte no encontrado' })
       const image = req.file ? req.file.filename : exixte.image
-      const result = await Report.update({ id, userId, type, description, image, fecha })
+      const result = await Report.update({ id, type, description, image, fecha })
+      console.log(result)
       if (result.affectedRows === 0) return res.status(404).json({ message: 'reporte no encontrado' })
       res.json({ success: true, data: result })
     } catch (error) { res.status(500).json({ error: error.message }) }

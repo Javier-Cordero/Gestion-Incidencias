@@ -2,8 +2,10 @@ import Details from '../models/Details.js'
 export default class DetailController {
   static async postDetail(req, res) {
     try {
-      const { reportId, stateId, userId, description, fecha } = req.body
+      const { reportId, userId, description, fecha } = req.body
+      const stateId = 1
       const result = await Details.create({ reportId, stateId, userId, description, fecha })
+      console.log(result)
       res.status(201).json({ data: result })
     } catch (error) { res.status(500).json({ error: error.message }) }
   }
