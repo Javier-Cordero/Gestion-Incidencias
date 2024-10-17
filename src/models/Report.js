@@ -65,9 +65,9 @@ export default class Report {
 
   static async delete(id) {
     try {
-      const rs = await Details.delete(id)
+      await Details.delete(id)
       const [result] = await pool.execute('DELETE FROM reports WHERE reportId =?', [id])
-      return { reporte: result, rs }
+      return result
     } catch (error) { return { message: error.message } }
   }
 }
